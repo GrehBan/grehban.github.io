@@ -1,0 +1,50 @@
+---
+import { getCollection, render } from "astro:content";
+import SiteLayout from "../../../layouts/SiteLayout.astro";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog", ({ data }) => !data.draft && data.locale === "ru");
+  return posts.map((post) => ({
+    params: { slug: post.id.replace(/^ru\//, "") },
+    props: { post, slug: post.id.replace(/^ru\//, "") },
+  }));
+}
+
+const { post, slug } = Astro.props;
+const { Content } = await render(post);
+const base = import.meta.env.BASE_URL;
+const formatDate = (date: Date) =>
+  new Intl.DateTimeFormat("ru-RU", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" }).format(date);
+const wordCount = (post.body ?? "").trim().split(/\s+/).filter(Boolean).length;
+const readingMinutes = Math.max(1, Math.ceil(wordCount / 220));
+---
+
+<SiteLayout
+  title={`${post.data.title} — Макс`}
+  description={post.data.description}
+  canonicalPath={`ru/blog/${slug}/`}
+  ogType="article"
+  language="ru"
+  languageSwitchHref={`${base}blog/${slug}/`}
+>
+  <main class="site-shell page-main">
+    <article class="article">
+      <a class="article-back" href={`${base}ru/blog/`}>← Все статьи</a>
+      <header class="article-header">
+        <div class="article-meta">
+          <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+          {post.data.updatedDate && <span>Обновлено {formatDate(post.data.updatedDate)}</span>}
+          <span>{readingMinutes} мин. чтения</span>
+        </div>
+        <h1>{post.data.title}</h1>
+        <p class="article-description">{post.data.description}</p>
+        <div class="post-tags">{post.data.tags.map((tag) => <span class="tag">{tag}</span>)}</div>
+      </header>
+      <div class="article-content"><Content /></div>
+      <div class="article-end">
+        <a class="text-link" href={`${base}ru/blog/`}>← Другие статьи</a>
+        <a class="text-link" href={`${base}ru/#contact`}>Связаться →</a>
+      </div>
+    </article>
+  </main>
+</SiteLayout>

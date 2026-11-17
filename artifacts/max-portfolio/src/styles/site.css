@@ -77,6 +77,8 @@ button { color: inherit; }
 .header-nav { display: flex; align-items: center; gap: clamp(14px, 2.5vw, 30px); }
 .header-nav a, .theme-toggle { color: var(--muted); font: 500 12px var(--font-mono); transition: color .18s ease; }
 .header-nav a:hover, .theme-toggle:hover { color: var(--text); }
+.header-nav .language-toggle { display: inline-grid; min-width: 36px; height: 36px; padding: 0 8px; place-items: center; border: 1px solid var(--border); border-radius: 9px; background: var(--surface); }
+.header-nav .language-toggle:hover { border-color: var(--accent); }
 .theme-toggle { display: inline-grid; width: 36px; height: 36px; padding: 0; place-items: center; border: 1px solid var(--border); border-radius: 9px; background: var(--surface); cursor: pointer; }
 .theme-toggle[hidden] { display: none; }
 .theme-toggle svg { width: 16px; height: 16px; }

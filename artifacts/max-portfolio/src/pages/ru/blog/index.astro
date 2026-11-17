@@ -1,0 +1,44 @@
+---
+import { getCollection } from "astro:content";
+import SiteLayout from "../../../layouts/SiteLayout.astro";
+
+const base = import.meta.env.BASE_URL;
+const posts = (await getCollection("blog", ({ data }) => !data.draft && data.locale === "ru"))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const formatDate = (date: Date) =>
+  new Intl.DateTimeFormat("ru-RU", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" }).format(date);
+---
+
+<SiteLayout
+  title="Статьи — Макс, backend и распределённые системы"
+  description="Заметки о Python, асинхронных системах, типизации и проектировании API."
+  canonicalPath="ru/blog/"
+  language="ru"
+  languageSwitchHref={`${base}blog/`}
+>
+  <main class="page-main">
+    <div class="site-shell page-intro">
+      <p class="section-label">блог</p>
+      <h1>Статьи</h1>
+      <p>Идеи, заметки о реализации и инженерные решения из работы с Python, асинхронными системами, типизацией и API.</p>
+    </div>
+    <div class="site-shell archive-list">
+      {posts.length ? posts.map((post) => {
+        const slug = post.id.replace(/^ru\//, "");
+        return (
+          <article class="archive-item">
+            <div class="archive-meta">
+              <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+              {post.data.updatedDate && <div>Обновлено {formatDate(post.data.updatedDate)}</div>}
+            </div>
+            <div>
+              <h2><a href={`${base}ru/blog/${slug}/`}>{post.data.title}</a></h2>
+              <p>{post.data.description}</p>
+              <div class="post-tags">{post.data.tags.map((tag) => <span class="tag">{tag}</span>)}</div>
+            </div>
+          </article>
+        );
+      }) : <div class="empty-state">Пока нет опубликованных заметок. Загляните позже.</div>}
+    </div>
+  </main>
+</SiteLayout>

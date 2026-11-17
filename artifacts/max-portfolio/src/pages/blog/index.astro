@@ -3,7 +3,7 @@ import { getCollection } from "astro:content";
 import SiteLayout from "../../layouts/SiteLayout.astro";
 
 const base = import.meta.env.BASE_URL;
-const posts = (await getCollection("blog", ({ data }) => !data.draft))
+const posts = (await getCollection("blog", ({ data }) => !data.draft && data.locale === "en"))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 const formatDate = (date: Date) =>
   new Intl.DateTimeFormat("en", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" }).format(date);
@@ -13,6 +13,8 @@ const formatDate = (date: Date) =>
   title="Writing — Max, Backend & Distributed Systems Engineer"
   description="Writing about Python, async systems, static typing, AI integrations, networking, and API tooling."
   canonicalPath="blog/"
+  language="en"
+  languageSwitchHref={`${base}ru/blog/`}
 >
   <main class="page-main">
     <div class="site-shell page-intro">

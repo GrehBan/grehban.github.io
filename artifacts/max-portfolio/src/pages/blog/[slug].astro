@@ -3,7 +3,7 @@ import { getCollection, render } from "astro:content";
 import SiteLayout from "../../layouts/SiteLayout.astro";
 
 export async function getStaticPaths() {
-  const posts = await getCollection("blog", ({ data }) => !data.draft);
+  const posts = await getCollection("blog", ({ data }) => !data.draft && data.locale === "en");
   return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
 }
 
@@ -21,6 +21,8 @@ const readingMinutes = Math.max(1, Math.ceil(wordCount / 220));
   description={post.data.description}
   canonicalPath={`blog/${post.id}/`}
   ogType="article"
+  language="en"
+  languageSwitchHref={`${base}ru/blog/${post.id}/`}
 >
   <main class="site-shell page-main">
     <article class="article">

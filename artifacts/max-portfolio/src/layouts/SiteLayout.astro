@@ -6,6 +6,10 @@ interface Props {
   description: string;
   canonicalPath: string;
   ogType?: "website" | "article";
+  language?: "en" | "ru";
+  languageSwitchHref?: string;
+  noIndex?: boolean;
+  languageAlternates?: boolean;
 }
 
 const {
@@ -13,34 +17,81 @@ const {
   description,
   canonicalPath,
   ogType = "website",
+  language = "en",
+  languageSwitchHref,
+  noIndex = false,
+  languageAlternates = true,
 } = Astro.props;
 const base = import.meta.env.BASE_URL;
-const canonical = new URL(`${base}${canonicalPath.replace(/^\/+/, "")}`, Astro.site);
-const socialImage = new URL(`${base}og-card.svg`, Astro.site);
+const currentPath = canonicalPath.replace(/^\/+/, "");
+const englishPath = language === "ru" ? currentPath.replace(/^ru\//, "") : currentPath;
+const russianPath = `ru/${englishPath}`;
+const canonical = new URL(`${base}${currentPath}`, Astro.site);
+const englishAlternate = new URL(`${base}${englishPath}`, Astro.site);
+const russianAlternate = new URL(`${base}${russianPath}`, Astro.site);
+const socialImage = new URL(`${base}${language === "ru" ? "og-card-ru.svg" : "og-card.svg"}`, Astro.site);
+const localizedHome = language === "ru" ? `${base}ru/` : base;
+const rssHref = language === "ru" ? `${base}ru/rss.xml` : `${base}rss.xml`;
+const switchHref = languageSwitchHref ?? (language === "ru" ? base : `${base}ru/`);
+const labels = language === "ru"
+  ? {
+      nav: "Основная навигация",
+      projects: "проекты",
+      about: "обо мне",
+      blog: "блог",
+      contact: "контакты",
+      switchLanguage: "Переключить на английский",
+      languageTitle: "Переключить язык на английский",
+      themeLight: "Переключить на светлую тему",
+      themeDark: "Переключить на тёмную тему",
+      themeTitle: "Сменить тему",
+      rssTitle: "Макс — инженер по backend-разработке и распределённым системам",
+      footer: "Макс · Backend и распределённые системы.",
+      home: "Макс, главная",
+    }
+  : {
+      nav: "Main navigation",
+      projects: "projects",
+      about: "about",
+      blog: "blog",
+      contact: "contact",
+      switchLanguage: "Switch to Russian",
+      languageTitle: "Switch language to Russian",
+      themeLight: "Switch to light mode",
+      themeDark: "Switch to dark mode",
+      themeTitle: "Switch theme",
+      rssTitle: "Max — Backend & Distributed Systems Engineer",
+      footer: "Max · Backend & distributed systems.",
+      home: "Max, home",
+    };
 ---
 
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang={language} data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="dark light" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {noIndex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="canonical" href={canonical.toString()} />
+    {languageAlternates && <link rel="alternate" hreflang="en" href={englishAlternate.toString()} />}
+    {languageAlternates && <link rel="alternate" hreflang="ru" href={russianAlternate.toString()} />}
+    {languageAlternates && <link rel="alternate" hreflang="x-default" href={englishAlternate.toString()} />}
     <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
-    <link rel="alternate" type="application/rss+xml" title="Max — Backend &amp; Distributed Systems Engineer" href={`${base}rss.xml`} />
+    <link rel="alternate" type="application/rss+xml" title={labels.rssTitle} href={rssHref} />
     <meta name="theme-color" content="#0d1117" />
     <meta property="og:type" content={ogType} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical.toString()} />
-    <meta property="og:site_name" content="Max — Backend &amp; Distributed Systems Engineer" />
+    <meta property="og:site_name" content={language === "ru" ? "Макс — инженер по backend-разработке и распределённым системам" : "Max — Backend & Distributed Systems Engineer"} />
     <meta property="og:image" content={socialImage.toString()} />
     <meta property="og:image:type" content="image/svg+xml" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Max — Backend & Distributed Systems Engineer specializing in typed, async-first Python" />
+    <meta property="og:image:alt" content={language === "ru" ? "Макс — инженер по backend-разработке и распределённым системам, типизированный асинхронный Python" : "Max — Backend & Distributed Systems Engineer specializing in typed, async-first Python"} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
@@ -55,15 +106,30 @@ const socialImage = new URL(`${base}og-card.svg`, Astro.site);
   <body>
     <header class="site-header">
       <div class="site-shell header-inner">
-        <a class="brand" href={`${base}`} aria-label="Max, home">
+        <a class="brand" href={localizedHome} aria-label={labels.home}>
           <span class="brand-mark">M</span><span class="brand-name">Max</span>
         </a>
-        <nav class="header-nav" aria-label="Main navigation">
-          <a href={`${base}#projects`}>projects</a>
-          <a href={`${base}#about`}>about</a>
-          <a href={`${base}#blog`}>blog</a>
-          <a href={`${base}#contact`}>contact</a>
-          <button class="theme-toggle" type="button" aria-label="Switch to light mode" title="Switch theme" hidden>
+        <nav class="header-nav" aria-label={labels.nav}>
+          <a href={`${localizedHome}#projects`}>{labels.projects}</a>
+          <a href={`${localizedHome}#about`}>{labels.about}</a>
+          <a href={`${localizedHome}#blog`}>{labels.blog}</a>
+          <a href={`${localizedHome}#contact`}>{labels.contact}</a>
+          <a
+            class="language-toggle"
+            href={switchHref}
+            lang={language === "ru" ? "en" : "ru"}
+            aria-label={labels.switchLanguage}
+            title={labels.languageTitle}
+          >{language === "ru" ? "EN" : "RU"}</a>
+          <button
+            class="theme-toggle"
+            type="button"
+            aria-label={labels.themeLight}
+            title={labels.themeTitle}
+            data-switch-to-light={labels.themeLight}
+            data-switch-to-dark={labels.themeDark}
+            hidden
+          >
             <svg class="moon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20.2 15.1A8.4 8.4 0 0 1 8.9 3.8 8.5 8.5 0 1 0 20.2 15.1Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" /></svg>
             <svg class="sun" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.7" /><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" /></svg>
           </button>
@@ -73,25 +139,28 @@ const socialImage = new URL(`${base}og-card.svg`, Astro.site);
     <slot />
     <footer class="site-footer">
       <div class="site-shell footer-inner">
-        <span>© {new Date().getFullYear()} Max · Backend &amp; distributed systems.</span>
+        <span>© {new Date().getFullYear()} {labels.footer}</span>
         <div class="footer-links">
-          <a href={`${base}rss.xml`}>RSS</a>
+          <a href={rssHref}>RSS</a>
           <a href="https://github.com/GrehBan" target="_blank" rel="noreferrer">GitHub</a>
-          <a href={`${base}#contact`}>contact</a>
+          <a href={`${localizedHome}#contact`}>{labels.contact}</a>
         </div>
       </div>
     </footer>
     <script is:inline>
       const themeButton = document.querySelector(".theme-toggle");
-      themeButton?.setAttribute(
-        "aria-label",
-        `Switch to ${document.documentElement.dataset.theme === "light" ? "dark" : "light"} mode`,
-      );
+      const updateThemeLabel = () => {
+        const isLight = document.documentElement.dataset.theme === "light";
+        themeButton?.setAttribute("aria-label", isLight
+          ? themeButton.dataset.switchToDark || "Switch to dark mode"
+          : themeButton.dataset.switchToLight || "Switch to light mode");
+      };
+      updateThemeLabel();
       themeButton?.removeAttribute("hidden");
       themeButton?.addEventListener("click", () => {
         const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
         document.documentElement.dataset.theme = next;
-        themeButton.setAttribute("aria-label", `Switch to ${next === "light" ? "dark" : "light"} mode`);
+        updateThemeLabel();
         try { localStorage.setItem("max-portfolio-theme", next); } catch {}
       });
     </script>

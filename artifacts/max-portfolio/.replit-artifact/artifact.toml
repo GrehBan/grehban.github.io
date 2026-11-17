@@ -1,7 +1,7 @@
 kind = "web"
 previewPath = "/"
 title = "Max — Backend & Distributed Systems Engineer"
-description = "A personal portfolio and technical blog for Max, a Python 3.10+ backend and distributed systems engineer working across async APIs, data stores, messaging, infrastructure, testing, CI/CD, and observability."
+description = "A bilingual English and Russian portfolio and technical blog for Max, a Python 3.10+ backend and distributed systems engineer working across async APIs, data stores, messaging, infrastructure, testing, CI/CD, and observability."
 version = "1.0.0"
 id = "artifacts/max-portfolio"
 router = "path"

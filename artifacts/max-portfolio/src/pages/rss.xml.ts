@@ -7,7 +7,7 @@ export const GET: APIRoute = async ({ site }) => {
     throw new Error("Set SITE_URL so RSS links use the canonical site address.");
   }
 
-  const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
+  const posts = (await getCollection("blog", ({ data }) => !data.draft && data.locale === "en")).sort(
     (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
   );
 
