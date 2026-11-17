@@ -1,0 +1,20 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+
+const base = import.meta.env.BASE_URL;
+---
+
+<SiteLayout
+  title="Page not found — Max"
+  description="This page could not be found. Return to Max’s Python developer portfolio."
+  canonicalPath="404.html"
+>
+  <main class="site-shell page-main">
+    <section class="page-intro">
+      <p class="section-label">404 / not found</p>
+      <h1>That page isn’t here.</h1>
+      <p>The link may be old, or the address may have a typo.</p>
+      <a class="button button-primary" href={base}>Back to the portfolio <span aria-hidden="true">↗</span></a>
+    </section>
+  </main>
+</SiteLayout>

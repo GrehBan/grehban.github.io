@@ -1,0 +1,1 @@
+- [Astro managed workflows](astro-managed-workflows.md) — prevent Astro's agent-detected CLI from detaching the dev server from Replit previews.

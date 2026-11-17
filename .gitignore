@@ -10,6 +10,7 @@ out-tsc
 .next
 .turbo
 .svelte-kit
+.astro
 .nuxt
 .output
 .vercel

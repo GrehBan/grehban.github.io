@@ -1,0 +1,39 @@
+---
+import { getCollection } from "astro:content";
+import SiteLayout from "../../layouts/SiteLayout.astro";
+
+const base = import.meta.env.BASE_URL;
+const posts = (await getCollection("blog", ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const formatDate = (date: Date) =>
+  new Intl.DateTimeFormat("en", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" }).format(date);
+---
+
+<SiteLayout
+  title="Writing — Max, Python developer"
+  description="Writing about Python, async systems, static typing, AI integrations, networking, and API tooling."
+  canonicalPath="blog/"
+>
+  <main class="page-main">
+    <div class="site-shell page-intro">
+      <p class="section-label">blog</p>
+      <h1>Writing</h1>
+      <p>Ideas, implementation notes, and patterns from working with Python, async systems, typing, and APIs.</p>
+    </div>
+    <div class="site-shell archive-list">
+      {posts.length ? posts.map((post) => (
+        <article class="archive-item">
+          <div class="archive-meta">
+            <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+            {post.data.updatedDate && <div>Updated {formatDate(post.data.updatedDate)}</div>}
+          </div>
+          <div>
+            <h2><a href={`${base}blog/${post.id}/`}>{post.data.title}</a></h2>
+            <p>{post.data.description}</p>
+            <div class="post-tags">{post.data.tags.map((tag) => <span class="tag">{tag}</span>)}</div>
+          </div>
+        </article>
+      )) : <div class="empty-state">No published notes yet. Check back soon.</div>}
+    </div>
+  </main>
+</SiteLayout>

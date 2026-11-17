@@ -1,0 +1,25 @@
+kind = "web"
+previewPath = "/"
+title = "Max — Python Developer"
+description = "A personal portfolio for Max, a Python developer specializing in typed, async-first libraries and API tooling, with projects, writing, profile, and contact details."
+version = "1.0.0"
+id = "artifacts/max-portfolio"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 20900
+
+[services.development]
+run = "pnpm --filter @workspace/max-portfolio run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/max-portfolio", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/max-portfolio/dist/public"
+
+
+[services.env]
+PORT = "20900"
+BASE_PATH = "/"

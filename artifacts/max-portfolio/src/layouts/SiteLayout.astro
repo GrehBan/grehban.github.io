@@ -1,0 +1,99 @@
+---
+import "../styles/site.css";
+
+interface Props {
+  title: string;
+  description: string;
+  canonicalPath: string;
+  ogType?: "website" | "article";
+}
+
+const {
+  title,
+  description,
+  canonicalPath,
+  ogType = "website",
+} = Astro.props;
+const base = import.meta.env.BASE_URL;
+const canonical = new URL(`${base}${canonicalPath.replace(/^\/+/, "")}`, Astro.site);
+const socialImage = new URL(`${base}og-card.svg`, Astro.site);
+---
+
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical.toString()} />
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    <link rel="alternate" type="application/rss+xml" title="Max — Python developer" href={`${base}rss.xml`} />
+    <meta name="theme-color" content="#0d1117" />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical.toString()} />
+    <meta property="og:site_name" content="Max — Python developer" />
+    <meta property="og:image" content={socialImage.toString()} />
+    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Max — Python developer specializing in typed, async-first libraries and API tooling" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage.toString()} />
+    <script is:inline>
+      try {
+        const saved = localStorage.getItem("max-portfolio-theme");
+        if (saved === "light" || saved === "dark") document.documentElement.dataset.theme = saved;
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-shell header-inner">
+        <a class="brand" href={`${base}`} aria-label="Max, home">
+          <span class="brand-mark">M</span><span class="brand-name">Max</span>
+        </a>
+        <nav class="header-nav" aria-label="Main navigation">
+          <a href={`${base}#projects`}>projects</a>
+          <a href={`${base}#about`}>about</a>
+          <a href={`${base}#blog`}>blog</a>
+          <a href={`${base}#contact`}>contact</a>
+          <button class="theme-toggle" type="button" aria-label="Switch to light mode" title="Switch theme" hidden>
+            <svg class="moon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20.2 15.1A8.4 8.4 0 0 1 8.9 3.8 8.5 8.5 0 1 0 20.2 15.1Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            <svg class="sun" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.7" /><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" /></svg>
+          </button>
+        </nav>
+      </div>
+    </header>
+    <slot />
+    <footer class="site-footer">
+      <div class="site-shell footer-inner">
+        <span>© {new Date().getFullYear()} Max · Python, with care.</span>
+        <div class="footer-links">
+          <a href={`${base}rss.xml`}>RSS</a>
+          <a href="https://github.com/GrehBan" target="_blank" rel="noreferrer">GitHub</a>
+          <a href={`${base}#contact`}>contact</a>
+        </div>
+      </div>
+    </footer>
+    <script is:inline>
+      const themeButton = document.querySelector(".theme-toggle");
+      themeButton?.setAttribute(
+        "aria-label",
+        `Switch to ${document.documentElement.dataset.theme === "light" ? "dark" : "light"} mode`,
+      );
+      themeButton?.removeAttribute("hidden");
+      themeButton?.addEventListener("click", () => {
+        const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+        document.documentElement.dataset.theme = next;
+        themeButton.setAttribute("aria-label", `Switch to ${next === "light" ? "dark" : "light"} mode`);
+        try { localStorage.setItem("max-portfolio-theme", next); } catch {}
+      });
+    </script>
+  </body>
+</html>

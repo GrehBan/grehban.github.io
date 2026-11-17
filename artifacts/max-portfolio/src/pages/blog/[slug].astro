@@ -1,0 +1,45 @@
+---
+import { getCollection, render } from "astro:content";
+import SiteLayout from "../../layouts/SiteLayout.astro";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog", ({ data }) => !data.draft);
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const base = import.meta.env.BASE_URL;
+const formatDate = (date: Date) =>
+  new Intl.DateTimeFormat("en", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" }).format(date);
+const wordCount = (post.body ?? "").trim().split(/\s+/).filter(Boolean).length;
+const readingMinutes = Math.max(1, Math.ceil(wordCount / 220));
+---
+
+<SiteLayout
+  title={`${post.data.title} — Max`}
+  description={post.data.description}
+  canonicalPath={`blog/${post.id}/`}
+  ogType="article"
+>
+  <main class="site-shell page-main">
+    <article class="article">
+      <a class="article-back" href={`${base}blog/`}>← All writing</a>
+      <header class="article-header">
+        <div class="article-meta">
+          <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+          {post.data.updatedDate && <span>Updated {formatDate(post.data.updatedDate)}</span>}
+          <span>{readingMinutes} min read</span>
+        </div>
+        <h1>{post.data.title}</h1>
+        <p class="article-description">{post.data.description}</p>
+        <div class="post-tags">{post.data.tags.map((tag) => <span class="tag">{tag}</span>)}</div>
+      </header>
+      <div class="article-content"><Content /></div>
+      <div class="article-end">
+        <a class="text-link" href={`${base}blog/`}>← More writing</a>
+        <a class="text-link" href={`${base}#contact`}>Get in touch →</a>
+      </div>
+    </article>
+  </main>
+</SiteLayout>
