@@ -12,7 +12,7 @@ export const GET: APIRoute = async ({ site }) => {
   );
 
   return rss({
-    title: "Max — Python developer",
+    title: "Max — Backend & Distributed Systems Engineer",
     description:
       "Notes on Python, async systems, typing, AI integrations, and API tooling.",
     site,

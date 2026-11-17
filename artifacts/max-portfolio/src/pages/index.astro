@@ -9,25 +9,29 @@ const posts = (await getCollection("blog", ({ data }) => !data.draft))
 const formatDate = (date: Date) =>
   new Intl.DateTimeFormat("en", { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" }).format(date);
 const focusAreas = [
-  { title: "AI & LLM integrations", description: "Typed interfaces around model APIs, tool calls, and the parts that make integrations predictable.", tags: ["Python", "AI APIs", "typing"] },
-  { title: "Async networking", description: "Network clients and async-first building blocks that behave well under real-world latency.", tags: ["asyncio", "HTTP", "resilience"] },
-  { title: "Web backends & API tooling", description: "Backend services and developer tools with clear contracts, useful errors, and good ergonomics.", tags: ["API design", "backend", "DX"] },
-  { title: "Telegram bots & automation", description: "Small, dependable async systems that connect conversations to useful workflows.", tags: ["Telegram", "async", "automation"] },
+  { title: "Backend & Async", description: "Typed Python APIs, asynchronous services, and outbound HTTP integrations.", tags: ["Python 3.10+", "asyncio", "FastAPI", "Starlette", "aiohttp", "HTTPX", "Pydantic", "typing"] },
+  { title: "Databases", description: "Relational, document, cache, and time-series storage with deliberate schema evolution.", tags: ["PostgreSQL", "MongoDB", "Redis", "InfluxDB", "SQL", "SQLAlchemy 2.0", "Alembic"] },
+  { title: "Messaging & Distributed Systems", description: "Queues, streams, and task processing chosen for the delivery model each system needs.", tags: ["RabbitMQ", "RabbitMQ Quorum Queues", "NATS", "NATS JetStream", "Celery"] },
+  { title: "Infrastructure", description: "Linux-first delivery, container orchestration, and web-server operations.", tags: ["Linux", "Docker", "Docker Swarm", "Nginx", "Apache", "Bash"] },
+  { title: "Observability", description: "Metrics, traces, and logs that make distributed services easier to operate.", tags: ["Prometheus", "Grafana", "OpenTelemetry", "LGTM Stack", "Loki"] },
+  { title: "Testing", description: "Fast feedback, realistic infrastructure in tests, and property-based edge-case discovery.", tags: ["Pytest", "pytest-asyncio", "Testcontainers", "Hypothesis"] },
+  { title: "CI/CD", description: "Repeatable checks and delivery pipelines for Python services.", tags: ["GitHub Actions"] },
+  { title: "AI & integrations", description: "Async API tooling for AI/LLM services, networking, and Telegram automation.", tags: ["AI / LLM", "API tooling", "Telegram bots"] },
 ];
 ---
 
 <SiteLayout
-  title="Max — Python developer"
-  description="Python developer specializing in typed, async-first libraries and API tooling. Seven years in Python, focused on AI integrations, networking, web backends, and async systems."
+  title="Max — Backend & Distributed Systems Engineer"
+  description="Backend and distributed systems engineer specializing in typed, async-first Python, API tooling, messaging, data systems, infrastructure, testing, and observability."
   canonicalPath=""
 >
   <main>
     <section class="site-shell hero" aria-labelledby="hero-title">
       <div class="hero-copy">
-        <p class="hero-kicker">Python / async / typed</p>
+        <p class="hero-kicker">Python 3.10+ / backend / distributed systems</p>
         <h1 id="hero-title">Hi, I’m <span>Max.</span></h1>
-        <p class="hero-lede">Python developer specializing in typed, async-first libraries and API tooling.</p>
-        <p class="hero-note">Seven years in Python. Building reliable edges between systems.</p>
+        <p class="hero-lede">Backend &amp; Distributed Systems Engineer specializing in typed, async-first Python.</p>
+        <p class="hero-note">Seven years in Python. From API contracts to production operations.</p>
         <div class="hero-actions">
           <a class="button button-primary" href={`${base}#projects`}>Explore my work <span aria-hidden="true">↘</span></a>
           <a class="button" href="https://github.com/GrehBan" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
@@ -51,8 +55,8 @@ const focusAreas = [
     <section class="site-shell section" id="projects" aria-labelledby="projects-title">
       <p class="section-label">projects</p>
       <div class="section-heading">
-        <h2 id="projects-title">Systems, made easier to trust.</h2>
-        <p>Representative themes across my work: clear interfaces, careful concurrency, and tools that feel good to use.</p>
+        <h2 id="projects-title">One stack, end to end.</h2>
+        <p>Backend APIs through messaging, deployment, testing, and runtime visibility. These are complementary tools, not one fixed bundle used in every system.</p>
       </div>
       <div class="project-grid">
         {focusAreas.map((project, index) => (
@@ -73,24 +77,26 @@ const focusAreas = [
       <p class="section-label">about</p>
       <div class="about-layout">
         <div class="about-stamp" aria-label="Developer profile">
-          <span class="code-line"><span class="code-value">max</span> = Developer(</span>
-          <span class="code-line">&nbsp;&nbsp;years_python=<span class="code-value">7</span>,</span>
-          <span class="code-line">&nbsp;&nbsp;style=<span class="code-value">"async-first"</span>,</span>
-          <span class="code-line">&nbsp;&nbsp;types=<span class="code-value">"strict, useful"</span>,</span>
+          <span class="code-line"><span class="code-value">max</span> = Engineer(</span>
+          <span class="code-line">&nbsp;&nbsp;focus=<span class="code-value">"backend + distributed systems"</span>,</span>
+          <span class="code-line">&nbsp;&nbsp;python=<span class="code-value">">=3.10"</span>,</span>
+          <span class="code-line">&nbsp;&nbsp;concurrency=<span class="code-value">"asyncio"</span>,</span>
+          <span class="code-line">&nbsp;&nbsp;style=<span class="code-value">"typed, async-first"</span>,</span>
           <span class="code-line">)</span>
         </div>
         <div class="about-copy">
           <h2 id="about-title">Practical by design.<br />Precise by default.</h2>
-          <p>I’ve spent seven years working in Python, with a particular interest in the systems around an API: how they communicate, how they fail, and how their interfaces stay understandable.</p>
-          <p>My focus is <strong>typed, async-first libraries and API tooling</strong>—especially for AI and LLM integrations, networking, web backends, Telegram bots, and asynchronous systems.</p>
-          <p>Static typing is part of the design process for me, not an afterthought. The goal is code that communicates intent and helps the next change feel smaller.</p>
+          <p>I’ve spent seven years in Python, working across the full backend lifecycle: typed API boundaries, async networking, persistence and migrations, distributed work, delivery, and production visibility.</p>
+          <p><strong>FastAPI and Starlette with Pydantic</strong> cover HTTP services; asyncio, aiohttp, and HTTPX support async work and integrations. The data layer spans PostgreSQL, SQLAlchemy 2.0, Alembic, MongoDB, Redis, InfluxDB, and direct SQL—different tools for different data and access patterns.</p>
+          <p>RabbitMQ quorum queues and NATS JetStream offer distinct messaging models; Celery handles task workflows. I choose between them based on delivery guarantees, replay needs, and operational fit—not by combining every broker by default.</p>
+          <p>Docker, Docker Swarm, Nginx, Apache, Linux, Bash, and GitHub Actions take services toward production. Pytest, pytest-asyncio, Testcontainers, and Hypothesis support confidence; Prometheus, Grafana, OpenTelemetry, the LGTM stack, and Loki help make runtime behavior visible.</p>
           <div class="skill-lines" aria-label="Areas of focus">
-            <span class="skill-line">Python & static typing</span>
-            <span class="skill-line">Async systems</span>
-            <span class="skill-line">AI / LLM integrations</span>
-            <span class="skill-line">Networking & APIs</span>
-            <span class="skill-line">Web backends</span>
-            <span class="skill-line">Telegram bots</span>
+            <span class="skill-line">Typed, async-first design</span>
+            <span class="skill-line">HTTP APIs & integrations</span>
+            <span class="skill-line">Data & schema evolution</span>
+            <span class="skill-line">Messaging & background work</span>
+            <span class="skill-line">Testing & reliability</span>
+            <span class="skill-line">Production operations</span>
           </div>
         </div>
       </div>
@@ -131,7 +137,7 @@ const focusAreas = [
       <div class="contact-layout">
         <div class="contact-intro">
           <h2 id="contact-title">Let’s talk about the tricky parts.</h2>
-          <p>Have a Python library, async system, or API integration to make more dependable? Send a note.</p>
+          <p>Have a Python API, distributed workload, or async integration to make more dependable? Send a note.</p>
           <div class="contact-links">
             <a class="contact-link" href="https://github.com/GrehBan" target="_blank" rel="noreferrer"><span>↗</span><strong>GitHub</strong> @GrehBan</a>
             <a class="contact-link" href="https://t.me/maxexban" target="_blank" rel="noreferrer"><span>↗</span><strong>Telegram</strong> @maxexban</a>

@@ -1,7 +1,9 @@
-# Max — Python Developer
+# Max — Backend & Distributed Systems Engineer
 
-Personal portfolio and static blog built with Astro. The site is configured for
-GitHub Pages at `https://grehban.github.io`.
+Personal portfolio and static blog built with Astro. The site presents Max’s
+Python backend, async, distributed systems, infrastructure, testing, and
+observability experience. It is configured for GitHub Pages at
+`https://grehban.github.io`.
 
 ## Local development
 

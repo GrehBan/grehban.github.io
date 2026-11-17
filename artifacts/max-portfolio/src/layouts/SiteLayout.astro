@@ -29,18 +29,18 @@ const socialImage = new URL(`${base}og-card.svg`, Astro.site);
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical.toString()} />
     <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
-    <link rel="alternate" type="application/rss+xml" title="Max — Python developer" href={`${base}rss.xml`} />
+    <link rel="alternate" type="application/rss+xml" title="Max — Backend &amp; Distributed Systems Engineer" href={`${base}rss.xml`} />
     <meta name="theme-color" content="#0d1117" />
     <meta property="og:type" content={ogType} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical.toString()} />
-    <meta property="og:site_name" content="Max — Python developer" />
+    <meta property="og:site_name" content="Max — Backend &amp; Distributed Systems Engineer" />
     <meta property="og:image" content={socialImage.toString()} />
     <meta property="og:image:type" content="image/svg+xml" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Max — Python developer specializing in typed, async-first libraries and API tooling" />
+    <meta property="og:image:alt" content="Max — Backend & Distributed Systems Engineer specializing in typed, async-first Python" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
@@ -73,7 +73,7 @@ const socialImage = new URL(`${base}og-card.svg`, Astro.site);
     <slot />
     <footer class="site-footer">
       <div class="site-shell footer-inner">
-        <span>© {new Date().getFullYear()} Max · Python, with care.</span>
+        <span>© {new Date().getFullYear()} Max · Backend &amp; distributed systems.</span>
         <div class="footer-links">
           <a href={`${base}rss.xml`}>RSS</a>
           <a href="https://github.com/GrehBan" target="_blank" rel="noreferrer">GitHub</a>

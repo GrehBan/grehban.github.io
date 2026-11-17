@@ -8,10 +8,10 @@
   <rect width="1200" height="630" fill="#0d1117"/>
   <circle cx="1010" cy="110" r="390" fill="url(#glow)"/>
   <rect x="78" y="74" width="1044" height="482" rx="20" fill="none" stroke="#30363d"/>
-  <text x="128" y="164" fill="#a78bfa" font-family="monospace" font-size="22">// python developer</text>
+  <text x="128" y="164" fill="#a78bfa" font-family="monospace" font-size="22">// backend &amp; distributed systems</text>
   <text x="128" y="286" fill="#f0f3f6" font-family="Arial, sans-serif" font-size="76" font-weight="700">Max</text>
-  <text x="128" y="354" fill="#c9d1d9" font-family="Arial, sans-serif" font-size="31">Typed, async-first libraries</text>
-  <text x="128" y="398" fill="#c9d1d9" font-family="Arial, sans-serif" font-size="31">and API tooling.</text>
+  <text x="128" y="354" fill="#c9d1d9" font-family="Arial, sans-serif" font-size="31">Python 3.10+ · typed · async-first</text>
+  <text x="128" y="398" fill="#c9d1d9" font-family="Arial, sans-serif" font-size="31">APIs, messaging &amp; production systems</text>
   <text x="128" y="494" fill="#8b949e" font-family="monospace" font-size="20">grehban.github.io</text>
   <circle cx="1004" cy="440" r="48" fill="#6d4aff"/>
   <path d="M982 462v-44h12l10 16 11-16h12v44h-13v-23l-10 14-10-14v23z" fill="#fff"/>
