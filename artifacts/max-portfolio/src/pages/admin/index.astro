@@ -1,524 +1,205 @@
 ---
 import SiteLayout from "../../layouts/SiteLayout.astro";
-import "../../styles/admin.css";
 
-const base = import.meta.env.BASE_URL;
-const apiSetting = import.meta.env.PUBLIC_CMS_API_URL?.trim() ?? "";
-const apiBase = import.meta.env.DEV
-  ? "/api"
-  : apiSetting
-    ? `${apiSetting.replace(/\/+$/, "").replace(/\/api$/, "")}/api`
-    : "";
+const englishPostsUrl =
+  "https://github.com/GrehBan/grehban.github.io/tree/master/artifacts/max-portfolio/src/content/blog";
+const russianPostsUrl = `${englishPostsUrl}/ru`;
 ---
 
 <SiteLayout
   title="Blog editor — Max"
-  description="Private blog editor."
+  description="Manage portfolio blog posts in the GitHub repository."
   canonicalPath="admin/"
   language="en"
-  languageSwitchHref={`${base}ru/`}
+  languageSwitchHref={`${import.meta.env.BASE_URL}ru/`}
   noIndex={true}
   languageAlternates={false}
 >
-  <main class="admin-main" data-cms-api={apiBase}>
+  <main class="admin-main">
     <div class="admin-wrap">
       <header class="admin-heading">
         <p class="section-label">blog editor</p>
         <h1>Manage posts</h1>
-        <p>Posts are saved as Markdown in GitHub. A successful save starts the Pages build.</p>
+        <p>
+          Posts are Markdown files in this repository. GitHub handles your admin
+          sign-in and records each change as a commit; no token or password is
+          stored on this site.
+        </p>
       </header>
 
-      <noscript>
-        <div class="admin-notice" role="note">
-          JavaScript is required to sign in to the private editor. The public portfolio and blog remain available without it.
+      <section class="admin-panel">
+        <h2>Edit or create a post</h2>
+        <p>
+          Open the right language folder while signed in to GitHub with write
+          access to this repository.
+        </p>
+        <div class="folder-links">
+          <a class="admin-button admin-button-primary" href={englishPostsUrl}>
+            English posts
+          </a>
+          <a class="admin-button" href={russianPostsUrl}>Русские посты</a>
         </div>
-      </noscript>
-
-      <section class="admin-panel admin-login" id="admin-login">
-        <h2>Sign in</h2>
-        <p class="admin-muted">Use the admin credentials configured in Replit Secrets.</p>
-        <form id="login-form" class="admin-form">
-          <label class="admin-field" for="admin-username">
-            <span>Username</span>
-            <input
-              id="admin-username"
-              name="username"
-              type="text"
-              value="admin"
-              autocomplete="username"
-              maxlength="100"
-              required
-            />
-          </label>
-          <label class="admin-field" for="admin-password">
-            <span>Password</span>
-            <input
-              id="admin-password"
-              name="password"
-              type="password"
-              autocomplete="current-password"
-              maxlength="256"
-              required
-            />
-          </label>
-          <button class="admin-button admin-button-primary" id="login-submit" type="submit">Sign in</button>
-          <p class="admin-status" id="login-status" role="status" aria-live="polite"></p>
-        </form>
+        <ol>
+          <li>
+            To edit a post, open its Markdown file, choose <strong>Edit this file</strong>,
+            and commit the change to <code>master</code>.
+          </li>
+          <li>
+            To create one, choose <strong>Add file → Create new file</strong> in
+            the folder and use a lowercase kebab-case <code>.md</code> filename.
+          </li>
+          <li>
+            Set <code>draft: true</code> to keep a post out of the public blog,
+            RSS feed, and sitemap. Set it to <code>false</code> when ready to publish.
+          </li>
+        </ol>
       </section>
 
-      <section class="admin-workspace" id="admin-workspace" hidden>
-        <div class="admin-toolbar">
-          <div>
-            <p class="admin-overline">Authenticated session</p>
-            <p class="admin-muted">For security, signing in again is required after a page refresh.</p>
-          </div>
-          <div class="admin-toolbar-actions">
-            <button class="admin-button" id="refresh-posts" type="button">Refresh</button>
-            <button class="admin-button" id="new-post" type="button">New post</button>
-            <button class="admin-button admin-button-quiet" id="logout" type="button">Sign out</button>
-          </div>
-        </div>
+      <section class="admin-panel template-panel">
+        <h2>Frontmatter</h2>
+        <p>Start a new file with this metadata, then add the post in Markdown.</p>
+        <pre><code>---
+title: "Post title"
+description: "Short summary of the post."
+pubDate: 2026-11-18
+tags: ["Python", "async"]
+draft: true
+locale: en
+---
 
-        <p class="admin-status admin-global-status" id="editor-status" role="status" aria-live="polite"></p>
-
-        <div class="admin-grid">
-          <aside class="admin-panel post-panel" aria-labelledby="posts-heading">
-            <div class="admin-panel-heading">
-              <div>
-                <p class="admin-overline">// content</p>
-                <h2 id="posts-heading">Posts</h2>
-              </div>
-              <span class="post-count" id="post-count">0</span>
-            </div>
-            <div class="admin-post-list" id="post-list" aria-live="polite">
-              <p class="admin-muted">Sign in to load posts.</p>
-            </div>
-          </aside>
-
-          <section class="admin-panel editor-panel" aria-labelledby="editor-heading">
-            <div class="admin-panel-heading">
-              <div>
-                <p class="admin-overline">// markdown</p>
-                <h2 id="editor-heading">New post</h2>
-              </div>
-            </div>
-
-            <form id="post-form" class="admin-form">
-              <div class="admin-form-row">
-                <label class="admin-field" for="post-locale">
-                  <span>Language</span>
-                  <select id="post-locale" name="locale" required>
-                    <option value="en">English</option>
-                    <option value="ru">Русский</option>
-                  </select>
-                </label>
-                <label class="admin-field" for="post-slug">
-                  <span>URL slug</span>
-                  <input
-                    id="post-slug"
-                    name="slug"
-                    type="text"
-                    pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
-                    minlength="1"
-                    maxlength="80"
-                    placeholder="typed-async-clients"
-                    required
-                  />
-                </label>
-              </div>
-              <label class="admin-field" for="post-title">
-                <span>Title</span>
-                <input id="post-title" name="title" type="text" maxlength="160" required />
-              </label>
-              <label class="admin-field" for="post-description">
-                <span>Description</span>
-                <textarea id="post-description" name="description" rows="2" maxlength="300" required></textarea>
-              </label>
-              <div class="admin-form-row">
-                <label class="admin-field" for="post-date">
-                  <span>Publish date</span>
-                  <input id="post-date" name="pubDate" type="date" required />
-                </label>
-                <label class="admin-field" for="post-tags">
-                  <span>Tags <small>comma-separated</small></span>
-                  <input id="post-tags" name="tags" type="text" placeholder="Python, async, typing" />
-                </label>
-              </div>
-              <label class="admin-field admin-checkbox" for="post-draft">
-                <input id="post-draft" name="draft" type="checkbox" />
-                <span>Save as draft</span>
-              </label>
-              <label class="admin-field" for="post-body">
-                <span>Markdown body</span>
-                <textarea
-                  id="post-body"
-                  name="body"
-                  class="markdown-input"
-                  rows="18"
-                  maxlength="40000"
-                  spellcheck="false"
-                  required
-                ></textarea>
-              </label>
-              <div class="admin-form-actions">
-                <button class="admin-button admin-button-primary" id="save-post" type="submit">Create post</button>
-                <button class="admin-button" id="cancel-edit" type="button">Clear form</button>
-              </div>
-              <p class="admin-muted form-hint">Slugs use lowercase letters, numbers, and hyphens. The language and slug cannot be changed while editing.</p>
-            </form>
-          </section>
-        </div>
+Write the post here.</code></pre>
+        <p class="admin-muted">
+          English files go in <code>src/content/blog/</code>; Russian files go
+          in <code>src/content/blog/ru/</code> and use <code>locale: ru</code>.
+          A commit to <code>master</code> starts the GitHub Pages build.
+        </p>
       </section>
     </div>
   </main>
-
-  <script>
-    interface AdminPost {
-      path: string;
-      locale: "en" | "ru";
-      slug: string;
-      title: string;
-      description: string;
-      pubDate: string;
-      updatedDate?: string;
-      tags: string[];
-      draft: boolean;
-      body: string;
-    }
-
-    interface CmsSession {
-      token: string;
-      expiresAt: string;
-    }
-
-    interface CmsCommitResult {
-      path: string;
-      commitSha: string;
-      commitUrl: string;
-    }
-
-    const page = document.querySelector<HTMLElement>("[data-cms-api]");
-    const apiBase = page?.dataset.cmsApi ?? "";
-    const loginPanel = document.querySelector<HTMLElement>("#admin-login");
-    const workspace = document.querySelector<HTMLElement>("#admin-workspace");
-    const loginForm = document.querySelector<HTMLFormElement>("#login-form");
-    const postForm = document.querySelector<HTMLFormElement>("#post-form");
-    const loginStatus = document.querySelector<HTMLElement>("#login-status");
-    const editorStatus = document.querySelector<HTMLElement>("#editor-status");
-    const loginSubmit = document.querySelector<HTMLButtonElement>("#login-submit");
-    const saveButton = document.querySelector<HTMLButtonElement>("#save-post");
-    const postList = document.querySelector<HTMLElement>("#post-list");
-    const postCount = document.querySelector<HTMLElement>("#post-count");
-    const editorHeading = document.querySelector<HTMLElement>("#editor-heading");
-    const passwordInput = document.querySelector<HTMLInputElement>("#admin-password");
-    const localeInput = document.querySelector<HTMLSelectElement>("#post-locale");
-    const slugInput = document.querySelector<HTMLInputElement>("#post-slug");
-    const titleInput = document.querySelector<HTMLInputElement>("#post-title");
-    const descriptionInput = document.querySelector<HTMLTextAreaElement>("#post-description");
-    const dateInput = document.querySelector<HTMLInputElement>("#post-date");
-    const tagsInput = document.querySelector<HTMLInputElement>("#post-tags");
-    const draftInput = document.querySelector<HTMLInputElement>("#post-draft");
-    const bodyInput = document.querySelector<HTMLTextAreaElement>("#post-body");
-
-    let sessionToken = "";
-    let sessionTimer = 0;
-    let editingPost: Pick<AdminPost, "locale" | "slug"> | null = null;
-    let posts: AdminPost[] = [];
-
-    function showStatus(target: HTMLElement | null, message: string, isError = false): void {
-      if (!target) return;
-      target.textContent = message;
-      target.classList.toggle("is-error", isError);
-      target.classList.toggle("is-success", !isError && Boolean(message));
-    }
-
-    function apiUrl(path: string): string {
-      return `${apiBase}${path}`;
-    }
-
-    async function apiRequest<T>(
-      path: string,
-      options: { method?: string; body?: unknown; authenticated?: boolean } = {},
-    ): Promise<T> {
-      if (!apiBase) {
-        throw new Error("The CMS API URL is not configured. Publish the API server and set the CMS_API_URL repository variable.");
-      }
-
-      const headers: Record<string, string> = { Accept: "application/json" };
-      if (options.body !== undefined) headers["Content-Type"] = "application/json";
-      if (options.authenticated) headers.Authorization = `Bearer ${sessionToken}`;
-
-      const response = await fetch(apiUrl(path), {
-        method: options.method ?? "GET",
-        headers,
-        body: options.body === undefined ? undefined : JSON.stringify(options.body),
-        credentials: "omit",
-        cache: "no-store",
-      });
-
-      let payload: unknown = null;
-      try {
-        payload = await response.json();
-      } catch {
-        // Keep the server's HTTP status visible when a proxy returns non-JSON.
-      }
-
-      if (!response.ok) {
-        const message =
-          payload && typeof payload === "object" && "error" in payload && typeof payload.error === "string"
-            ? payload.error
-            : `Request failed with status ${response.status}.`;
-        if (response.status === 401 && options.authenticated) {
-          clearSession("Session expired. Sign in again.");
-        }
-        throw new Error(message);
-      }
-
-      return payload as T;
-    }
-
-    function setEditorVisible(visible: boolean): void {
-      if (loginPanel) loginPanel.hidden = visible;
-      if (workspace) workspace.hidden = !visible;
-    }
-
-    function clearSession(message = ""): void {
-      sessionToken = "";
-      window.clearTimeout(sessionTimer);
-      posts = [];
-      setEditorVisible(false);
-      if (passwordInput) passwordInput.value = "";
-      if (postList) postList.replaceChildren();
-      if (postCount) postCount.textContent = "0";
-      showStatus(loginStatus, message, Boolean(message));
-    }
-
-    function setCommitStatus(message: string, commitUrl?: string): void {
-      if (!editorStatus) return;
-      editorStatus.replaceChildren(document.createTextNode(message));
-      editorStatus.classList.remove("is-error");
-      editorStatus.classList.add("is-success");
-      if (commitUrl) {
-        const link = document.createElement("a");
-        link.href = commitUrl;
-        link.target = "_blank";
-        link.rel = "noreferrer";
-        link.textContent = " View commit";
-        editorStatus.append(link);
-      }
-    }
-
-    function localDate(value: string | undefined): string {
-      return value?.slice(0, 10) ?? "";
-    }
-
-    function renderPosts(): void {
-      if (!postList || !postCount) return;
-      postList.replaceChildren();
-      postCount.textContent = String(posts.length);
-
-      if (!posts.length) {
-        const empty = document.createElement("p");
-        empty.className = "admin-muted";
-        empty.textContent = "No Markdown posts were found.";
-        postList.append(empty);
-        return;
-      }
-
-      for (const post of posts) {
-        const card = document.createElement("article");
-        card.className = "admin-post-card";
-
-        const meta = document.createElement("div");
-        meta.className = "admin-post-meta";
-        const locale = document.createElement("span");
-        locale.className = "admin-post-locale";
-        locale.textContent = post.locale.toUpperCase();
-        const status = document.createElement("span");
-        status.className = post.draft ? "admin-draft-badge" : "admin-published-badge";
-        status.textContent = post.draft ? "Draft" : "Published";
-        meta.append(locale, status);
-
-        const title = document.createElement("h3");
-        title.textContent = post.title;
-        const date = document.createElement("p");
-        date.className = "admin-muted admin-post-date";
-        date.textContent = localDate(post.pubDate);
-        const actions = document.createElement("div");
-        actions.className = "admin-post-actions";
-
-        const editButton = document.createElement("button");
-        editButton.className = "admin-button admin-button-small";
-        editButton.type = "button";
-        editButton.textContent = "Edit";
-        editButton.addEventListener("click", () => populateForm(post));
-
-        const deleteButton = document.createElement("button");
-        deleteButton.className = "admin-button admin-button-small admin-button-danger";
-        deleteButton.type = "button";
-        deleteButton.textContent = "Delete";
-        deleteButton.addEventListener("click", () => void deletePost(post));
-
-        actions.append(editButton, deleteButton);
-        card.append(meta, title, date, actions);
-        postList.append(card);
-      }
-    }
-
-    async function loadPosts(): Promise<void> {
-      showStatus(editorStatus, "Loading posts…");
-      try {
-        posts = await apiRequest<AdminPost[]>("/cms/posts", { authenticated: true });
-        renderPosts();
-        showStatus(editorStatus, "");
-      } catch (error) {
-        showStatus(editorStatus, error instanceof Error ? error.message : "Could not load posts.", true);
-      }
-    }
-
-    function resetForm(): void {
-      postForm?.reset();
-      editingPost = null;
-      if (localeInput) localeInput.disabled = false;
-      if (slugInput) slugInput.disabled = false;
-      if (dateInput) dateInput.value = new Date().toISOString().slice(0, 10);
-      if (editorHeading) editorHeading.textContent = "New post";
-      if (saveButton) saveButton.textContent = "Create post";
-      showStatus(editorStatus, "");
-    }
-
-    function populateForm(post: AdminPost): void {
-      editingPost = { locale: post.locale, slug: post.slug };
-      if (localeInput) {
-        localeInput.value = post.locale;
-        localeInput.disabled = true;
-      }
-      if (slugInput) {
-        slugInput.value = post.slug;
-        slugInput.disabled = true;
-      }
-      if (titleInput) titleInput.value = post.title;
-      if (descriptionInput) descriptionInput.value = post.description;
-      if (dateInput) dateInput.value = localDate(post.pubDate);
-      if (tagsInput) tagsInput.value = post.tags.join(", ");
-      if (draftInput) draftInput.checked = post.draft;
-      if (bodyInput) bodyInput.value = post.body;
-      if (editorHeading) editorHeading.textContent = `Edit: ${post.title}`;
-      if (saveButton) saveButton.textContent = "Save changes";
-      showStatus(editorStatus, `Editing ${post.locale.toUpperCase()} / ${post.slug}`);
-      postForm?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-
-    async function deletePost(post: AdminPost): Promise<void> {
-      const confirmed = window.confirm(`Delete “${post.title}” (${post.locale}) from GitHub? This cannot be undone from the editor.`);
-      if (!confirmed) return;
-
-      showStatus(editorStatus, `Deleting ${post.slug}…`);
-      try {
-        const result = await apiRequest<CmsCommitResult>(
-          `/cms/posts/${encodeURIComponent(post.locale)}/${encodeURIComponent(post.slug)}`,
-          { method: "DELETE", authenticated: true },
-        );
-        if (editingPost?.locale === post.locale && editingPost.slug === post.slug) resetForm();
-        await loadPosts();
-        setCommitStatus(`Deleted ${result.path}. The Pages build has been triggered.`, result.commitUrl);
-      } catch (error) {
-        showStatus(editorStatus, error instanceof Error ? error.message : "Could not delete the post.", true);
-      }
-    }
-
-    loginForm?.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      if (!apiBase) {
-        showStatus(loginStatus, "The CMS API URL is not configured. Publish the API server and set the CMS_API_URL repository variable.", true);
-        return;
-      }
-
-      const formData = new FormData(loginForm);
-      const username = String(formData.get("username") ?? "");
-      const password = String(formData.get("password") ?? "");
-      if (loginSubmit) loginSubmit.disabled = true;
-      showStatus(loginStatus, "Signing in…");
-
-      try {
-        const session = await apiRequest<CmsSession>("/cms/login", {
-          method: "POST",
-          body: { username, password },
-        });
-        sessionToken = session.token;
-        if (passwordInput) passwordInput.value = "";
-        setEditorVisible(true);
-        showStatus(loginStatus, "");
-        const remaining = Math.max(0, new Date(session.expiresAt).getTime() - Date.now());
-        sessionTimer = window.setTimeout(() => clearSession("Session expired. Sign in again."), remaining);
-        resetForm();
-        await loadPosts();
-      } catch (error) {
-        showStatus(loginStatus, error instanceof Error ? error.message : "Could not sign in.", true);
-      } finally {
-        if (loginSubmit) loginSubmit.disabled = false;
-      }
-    });
-
-    postForm?.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      if (!sessionToken || !localeInput || !slugInput || !titleInput || !descriptionInput || !dateInput || !tagsInput || !draftInput || !bodyInput) {
-        showStatus(editorStatus, "Sign in before editing posts.", true);
-        return;
-      }
-
-      const postInput = {
-        locale: localeInput.value as "en" | "ru",
-        slug: slugInput.value.trim(),
-        title: titleInput.value.trim(),
-        description: descriptionInput.value.trim(),
-        pubDate: dateInput.value,
-        tags: tagsInput.value.split(",").map((tag) => tag.trim()).filter(Boolean),
-        draft: draftInput.checked,
-        body: bodyInput.value,
-      };
-
-      if (saveButton) saveButton.disabled = true;
-      showStatus(editorStatus, editingPost ? "Saving changes…" : "Creating post…");
-
-      try {
-        const result = editingPost
-          ? await apiRequest<CmsCommitResult>(
-              `/cms/posts/${encodeURIComponent(editingPost.locale)}/${encodeURIComponent(editingPost.slug)}`,
-              {
-                method: "PUT",
-                authenticated: true,
-                body: {
-                  title: postInput.title,
-                  description: postInput.description,
-                  pubDate: postInput.pubDate,
-                  tags: postInput.tags,
-                  draft: postInput.draft,
-                  body: postInput.body,
-                },
-              },
-            )
-          : await apiRequest<CmsCommitResult>("/cms/posts", {
-              method: "POST",
-              authenticated: true,
-              body: postInput,
-            });
-
-        await loadPosts();
-        const savedPost = posts.find((post) => post.locale === postInput.locale && post.slug === postInput.slug);
-        if (savedPost) populateForm(savedPost);
-        setCommitStatus(`Saved ${result.path}. The Pages build has been triggered.`, result.commitUrl);
-      } catch (error) {
-        showStatus(editorStatus, error instanceof Error ? error.message : "Could not save the post.", true);
-      } finally {
-        if (saveButton) saveButton.disabled = false;
-      }
-    });
-
-    document.querySelector("#new-post")?.addEventListener("click", resetForm);
-    document.querySelector("#cancel-edit")?.addEventListener("click", resetForm);
-    document.querySelector("#refresh-posts")?.addEventListener("click", () => void loadPosts());
-    document.querySelector("#logout")?.addEventListener("click", () => clearSession("Signed out."));
-    if (dateInput) dateInput.value = new Date().toISOString().slice(0, 10);
-  </script>
 </SiteLayout>
+
+<style>
+  .admin-main {
+    min-height: calc(100dvh - 160px);
+    padding-block: 68px 96px;
+  }
+
+  .admin-wrap {
+    display: grid;
+    width: min(840px, calc(100% - 48px));
+    gap: 18px;
+    margin-inline: auto;
+  }
+
+  .admin-heading {
+    margin-bottom: 12px;
+  }
+
+  .admin-heading h1 {
+    margin: 0;
+    font-size: clamp(38px, 6vw, 58px);
+    line-height: 1.05;
+    letter-spacing: -.065em;
+  }
+
+  .admin-heading > p:last-child,
+  .admin-panel > p {
+    max-width: 680px;
+    margin: 14px 0 0;
+    color: var(--muted);
+  }
+
+  .admin-panel {
+    padding: 24px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--surface) 94%, transparent);
+  }
+
+  .admin-panel h2 {
+    margin: 0;
+    font-size: 19px;
+    letter-spacing: -.035em;
+  }
+
+  .folder-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .admin-button {
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 13px;
+    border: 1px solid var(--border-strong);
+    border-radius: 7px;
+    background: var(--surface-raised);
+    color: var(--text);
+    font: 500 11px var(--font-mono);
+    text-decoration: none;
+  }
+
+  .admin-button:hover {
+    border-color: var(--accent);
+    background: var(--accent-wash);
+  }
+
+  .admin-button-primary {
+    border-color: var(--accent-solid);
+    background: var(--accent-solid);
+    color: #fff;
+  }
+
+  .admin-panel ol {
+    display: grid;
+    gap: 11px;
+    margin: 22px 0 0;
+    padding-left: 22px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .admin-panel strong,
+  .admin-panel code {
+    color: var(--text);
+  }
+
+  .admin-panel code {
+    font: 12px var(--font-mono);
+  }
+
+  .template-panel pre {
+    overflow-x: auto;
+    margin: 18px 0 0;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--text);
+    font: 12px/1.7 var(--font-mono);
+  }
+
+  .admin-muted {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  @media (max-width: 520px) {
+    .admin-main {
+      padding-block: 46px 70px;
+    }
+
+    .admin-wrap {
+      width: min(100% - 36px, 600px);
+    }
+
+    .admin-panel {
+      padding: 18px;
+    }
+  }
+</style>
